@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1386491679 &1
+PresetManager:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_DefaultPresets:
+  - first:
+      m_NativeTypeID: 1020
+      m_ManagedTypePPtr: {fileID: 0}
+      m_ManagedTypeFallback: 
+    second:
+    - m_Preset: {fileID: 2655988077585873504, guid: 0cd792cc87e492d43b4e95b205fc5cc6, type: 2}
+      m_Filter: 
+      m_Disabled: 0
+  - first:
+      m_NativeTypeID: 1006
+      m_ManagedTypePPtr: {fileID: 0}
+      m_ManagedTypeFallback: 
+    second:
+    - m_Preset: {fileID: 2655988077585873504, guid: 7a99f8aa944efe94cb9bd74562b7d5f9, type: 2}
+      m_Filter: glob:"*_BaseColor.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 7a99f8aa944efe94cb9bd74562b7d5f9, type: 2}
+      m_Filter: glob:"*_Color.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 7a99f8aa944efe94cb9bd74562b7d5f9, type: 2}
+      m_Filter: glob:"*_D.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 7a99f8aa944efe94cb9bd74562b7d5f9, type: 2}
+      m_Filter: glob:"*_Albedo.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 1d826a4c23450f946b19c20560595a1f, type: 2}
+      m_Filter: glob:"*_NormalHeight.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 1d826a4c23450f946b19c20560595a1f, type: 2}
+      m_Filter: glob:"*_Normal.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 1d826a4c23450f946b19c20560595a1f, type: 2}
+      m_Filter: glob:"*_N.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 9303d565bd8aa6948ba775e843320e4d, type: 2}
+      m_Filter: glob:"*?(_AO|_Height|_MetallicSmoothness|_Roughness|_Smoothness|_AmbientOcclusion|_Displacement).png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 260d768d764efc642aac65a8dbe1cf4b, type: 2}
+      m_Filter: glob:"*_Mask.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 7a99f8aa944efe94cb9bd74562b7d5f9, type: 2}
+      m_Filter: glob:"*_SS.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 78830bb1431cab940b74be615e2a739f, type: 2}
+      m_Filter: glob:"*_Emissive.hdr"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 78830bb1431cab940b74be615e2a739f, type: 2}
+      m_Filter: glob:"*_em.hdr"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 7a99f8aa944efe94cb9bd74562b7d5f9, type: 2}
+      m_Filter: glob:"*_Emissive.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 7a99f8aa944efe94cb9bd74562b7d5f9, type: 2}
+      m_Filter: glob:"*_em.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 1bf13c2e0c85686428dd7eba786a9301, type: 2}
+      m_Filter: glob:"*.hdr"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 7a99f8aa944efe94cb9bd74562b7d5f9, type: 2}
+      m_Filter: glob:"**/_Textures/**/*.png"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 1df5c024b0b19624f8c987d6bab6b146, type: 2}
+      m_Filter: glob:"**/Screenshots/**/*?(.png|.jpg|.exr|.tga)"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 993bf0d3474e3c048a75f629156012ad, type: 2}
+      m_Filter: glob:"**/Sprites/**/*?(.png|.jpg|.exr|.tga)"
+      m_Disabled: 0
+    - m_Preset: {fileID: 2655988077585873504, guid: 77cdae81200c0464793f46c5b43df4fc, type: 2}
+      m_Filter: glob:"*_Unlit.png"
+      m_Disabled: 0

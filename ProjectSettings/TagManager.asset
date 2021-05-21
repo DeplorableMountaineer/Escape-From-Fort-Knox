@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Enemy
+  - Background
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Invisible to First Person
+  - Visible Only to First Person
+  - Invisible In Game
+  - Sky
+  - Background
+  - Midground
+  - Player
+  - Foreground
+  - Top
+  - Player Missile
+  - Enemy Missile
+  - Enemy
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Sky
+    uniqueID: 2473393385
+    locked: 0
+  - name: Background
+    uniqueID: 785834733
+    locked: 0
+  - name: Midground
+    uniqueID: 2963565233
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Behind Player
+    uniqueID: 1349844663
+    locked: 0
+  - name: Player
+    uniqueID: 3363168899
+    locked: 0
+  - name: Foreground
+    uniqueID: 1576879331
+    locked: 0
+  - name: Top
+    uniqueID: 161797269
+    locked: 0
