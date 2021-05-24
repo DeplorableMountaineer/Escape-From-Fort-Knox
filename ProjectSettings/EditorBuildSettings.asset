@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Third Party/URP/Scenes/SampleScene.unity
-    guid: d1c3109bdb54ad54c8a2b2838528e640
+    path: Assets/Deplorable Mountaineer/Scenes/Game.unity
+    guid: baa31f9397784954380294b50dbef63b
   m_configObjects: {}
