@@ -4,7 +4,7 @@ using UnityEngine.Events;
 namespace Deplorable_Mountaineer.Switches {
     public class Trigger : MonoBehaviour {
         [SerializeField] private UnityEvent onActivate;
-        [SerializeField] private int numActivations = 1;
+        [SerializeField] public int numActivations = 1;
         [SerializeField] private AudioSource activationSound;
 
         private void OnTriggerEnter(Collider other){
@@ -13,6 +13,7 @@ namespace Deplorable_Mountaineer.Switches {
             numActivations--;
             onActivate?.Invoke();
             if(activationSound) activationSound.Play();
+            
         }
     }
 }

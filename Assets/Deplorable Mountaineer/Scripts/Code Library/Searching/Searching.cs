@@ -8,15 +8,15 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
     /// Code is adapted from algorithms given in Russell and Norvig:
     /// <i>Artificial Intelligence: A Modern Approach</i>, fourth ed.
     ///
-    /// Algorithms to search a state graph for a path from the initial state to a goal state.
+    /// Algorithms to search a stateData graph for a path from the initial stateData to a goal stateData.
     /// Iterative Deepening Search is best in most cases where no good heuristic
-    /// or evaluation function is available, but still can perform poorly on large state graphs. 
+    /// or evaluation function is available, but still can perform poorly on large stateData graphs. 
     /// </summary>
     public static class Searching {
         /// <summary>
         /// The most commonly-used search algorithm; works well if heuristic is good.
         ///
-        /// It is complete if the state graph is finite or if both the following hold: there
+        /// It is complete if the stateData graph is finite or if both the following hold: there
         /// is a solution and there is a positive lower bound on action costs.  If
         /// heuristic is admissible (never overestimates cost from this node to goal), it is optimal.  If the heuristic
         /// is consistent (satisfies the triangle inequality, which implies admissibility),
@@ -31,11 +31,11 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
         /// can give very good results.  If the heuristic is not so good, memory is usually
         /// a limitation before time is. 
         /// </summary>
-        /// <param name="problem">The state graph representing the problem</param>
+        /// <param name="problem">The stateData graph representing the problem</param>
         /// <param name="heuristic">An estimate of the best possible path
         /// cost from a given node to a goal node</param>
-        /// <typeparam name="TS">The type of a state in the state graph</typeparam>
-        /// <typeparam name="TA">The type of an action in the state graph</typeparam>
+        /// <typeparam name="TS">The type of a stateData in the stateData graph</typeparam>
+        /// <typeparam name="TA">The type of an action in the stateData graph</typeparam>
         /// <returns>Solution node or null on failure</returns>
         public static Node<TS, TA> AStar<TS, TA>(IStateGraph<TS, TA> problem,
             Func<Node<TS, TA>, float> heuristic){
@@ -46,11 +46,11 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
         /// Use evaluation function to expand the best nodes first.  Performance depends on choice
         /// of evaluation function.
         /// </summary>
-        /// <param name="problem">The state graph representing the problem</param>
+        /// <param name="problem">The stateData graph representing the problem</param>
         /// <param name="evaluationFunction">popping a node from the frontier queue retrieves
         /// the highest value of this function</param>
-        /// <typeparam name="TS">The type of a state in the state graph</typeparam>
-        /// <typeparam name="TA">The type of an action in the state graph</typeparam>
+        /// <typeparam name="TS">The type of a stateData in the stateData graph</typeparam>
+        /// <typeparam name="TA">The type of an action in the stateData graph</typeparam>
         /// <returns>Solution node or null on failure</returns>
         public static Node<TS, TA> BestFirstSearch<TS, TA>(IStateGraph<TS, TA> problem,
             Func<Node<TS, TA>, float> evaluationFunction){
@@ -83,12 +83,12 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
 
         /// <summary>
         /// expand shallowest nodes first. Complete (if b is finite and either
-        /// there is a solution or state space is finite), optimal cost, and time and space
+        /// there is a solution or stateData space is finite), optimal cost, and time and space
         /// complexity is O(b^d) where b is branching factor and d is solution depth  
         /// </summary>
-        /// <param name="problem">The state graph representing the problem</param>
-        /// <typeparam name="TS">The type of a state in the state graph</typeparam>
-        /// <typeparam name="TA">The type of an action in the state graph</typeparam>
+        /// <param name="problem">The stateData graph representing the problem</param>
+        /// <typeparam name="TS">The type of a stateData in the stateData graph</typeparam>
+        /// <typeparam name="TA">The type of an action in the stateData graph</typeparam>
         /// <returns>Solution node or null on failure</returns>
         public static Node<TS, TA> BreadthFirstSearch<TS, TA>(IStateGraph<TS, TA> problem){
             Node<TS, TA> node = new Node<TS, TA>() {
@@ -118,16 +118,16 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
         }
 
         /// <summary>
-        /// expand nodes of lowest cost first. Complete (if b is finite and either the state
+        /// expand nodes of lowest cost first. Complete (if b is finite and either the stateData
         /// graph is finite or both the following hold: there
         /// is a positive lower bound on action costs and there is a solution), optimal cost,
         /// and time and space
         /// complexity is O(b^(1+c/e)) where b is branching factor, c is the optimal cost, and
         /// e is a lower bound on cost. 
         /// </summary>
-        /// <param name="problem">The state graph representing the problem</param>
-        /// <typeparam name="TS">The type of a state in the state graph</typeparam>
-        /// <typeparam name="TA">The type of an action in the state graph</typeparam>
+        /// <param name="problem">The stateData graph representing the problem</param>
+        /// <typeparam name="TS">The type of a stateData in the stateData graph</typeparam>
+        /// <typeparam name="TA">The type of an action in the stateData graph</typeparam>
         /// <returns>Solution node or null on failure</returns>
         public static Node<TS, TA> UniformCostSearch<TS, TA>(IStateGraph<TS, TA> problem){
             return BestFirstSearch(problem, node => node.PathCost);
@@ -136,14 +136,14 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
         /// <summary>
         /// Depth first with depth limit (or cost limit) that increases with each iteration.
         /// Complete (if b is finite and either
-        /// there is a solution or state space is finite) and optimal (if all action costs
+        /// there is a solution or stateData space is finite) and optimal (if all action costs
         /// are equal).  Time complexity is O(b^d) and space complexity is O(bd) where
         /// b is branching factor and d is solution depth.
         /// Set problem action costs to 1 to use actual node depth instead of cost
         /// </summary>
-        /// <param name="problem">The state graph representing the problem</param>
-        /// <typeparam name="TS">The type of a state in the state graph</typeparam>
-        /// <typeparam name="TA">The type of an action in the state graph</typeparam>
+        /// <param name="problem">The stateData graph representing the problem</param>
+        /// <typeparam name="TS">The type of a stateData in the stateData graph</typeparam>
+        /// <typeparam name="TA">The type of an action in the stateData graph</typeparam>
         /// <returns>Solution node or null on failure</returns>
         public static Node<TS, TA> IterativeDeepeningSearch<TS, TA>(
             IStateGraph<TS, TA> problem){
@@ -165,12 +165,12 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
         /// depth limit given will be cost limit, but time/space complexity still depends on
         /// true depth achieved.
         /// </summary>
-        /// <param name="problem">The state graph representing the problem</param>
+        /// <param name="problem">The stateData graph representing the problem</param>
         /// <param name="maxDepth">Maximum cost (or node depth) to search before failing</param>
         /// <param name="depthAchieved">Actual cost (or node depth) achieved.  If null
         /// is returned and this is less than or equal to max depth, there is no solution.</param>
-        /// <typeparam name="TS">The type of a state in the state graph</typeparam>
-        /// <typeparam name="TA">The type of an action in the state graph</typeparam>
+        /// <typeparam name="TS">The type of a stateData in the stateData graph</typeparam>
+        /// <typeparam name="TA">The type of an action in the stateData graph</typeparam>
         /// <returns>Solution node or null on failure or max depth exceeded</returns>
         public static Node<TS, TA> DepthLimitedSearch<TS, TA>(IStateGraph<TS, TA> problem,
             float maxDepth, out float depthAchieved){
@@ -202,10 +202,10 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
         /// <summary>
         /// Expand a node; utility function for other search algorithms
         /// </summary>
-        /// <param name="problem">The state graph representing the problem</param>
+        /// <param name="problem">The stateData graph representing the problem</param>
         /// <param name="node"></param>
-        /// <typeparam name="TS">The type of a state in the state graph</typeparam>
-        /// <typeparam name="TA">The type of an action in the state graph</typeparam>
+        /// <typeparam name="TS">The type of a stateData in the stateData graph</typeparam>
+        /// <typeparam name="TA">The type of an action in the stateData graph</typeparam>
         /// <returns>Enumeration of child nodes in no particular order</returns>
         private static IEnumerable<Node<TS, TA>> Expand<TS, TA>(IStateGraph<TS, TA> problem,
             Node<TS, TA> node){

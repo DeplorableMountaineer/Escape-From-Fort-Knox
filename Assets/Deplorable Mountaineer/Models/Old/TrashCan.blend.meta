@@ -3,7 +3,22 @@ guid: ac05f7de0df756249be2aba0ae9ccf61
 ModelImporter:
   serializedVersion: 21100
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bag
+    second: {fileID: 2100000, guid: 0c96325473c63df439910c492f4d2269, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Can
+    second: {fileID: 2100000, guid: b18b631b1d1e8b1448a3a0769861b330, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Housing
+    second: {fileID: 2100000, guid: ab3e64b31606188459d5001e151b1a5d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Deplorable_Mountaineer.Switches;
+using UnityEngine;
 
 namespace Deplorable_Mountaineer.Movers {
     public class SwitchedMover : MonoBehaviour {
@@ -8,13 +9,31 @@ namespace Deplorable_Mountaineer.Movers {
 
         private bool _activated = false;
         private Vector3 _endPosition;
+        private Vector3 _startPosition;
+
+        public bool Activated {
+            get => _activated;
+            set {
+                if(!_activated && value){
+                    transform.position = _endPosition;
+                    FindObjectOfType<Trigger>().numActivations = 0;
+                }
+                else if(_activated && !value){
+                    transform.position = _startPosition;
+                    audio.Stop();
+                }
+
+                _activated = value;
+            }
+        }
 
         private void Awake(){
             _endPosition = endPosition.position;
+            _startPosition = transform.position;
         }
 
         private void FixedUpdate(){
-            if(!_activated) return;
+            if(!Activated) return;
             Vector3 newPosition = Vector3.MoveTowards(transform.position, _endPosition,
                 speed*Time.fixedDeltaTime);
             transform.position = newPosition;
@@ -26,7 +45,7 @@ namespace Deplorable_Mountaineer.Movers {
 
         public void OnActivate(){
             if(enabled) audio.Play();
-            _activated = true;
+            _activated = true; //do not use property, which is instant-open
         }
     }
 }

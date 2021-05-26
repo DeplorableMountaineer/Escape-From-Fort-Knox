@@ -83,7 +83,7 @@ namespace Deplorable_Mountaineer.Code_Library.Character {
         }
 
         private void OnEnable(){
-            //ensure in a valid state
+            //ensure in a valid stateData
             if(IsFirstPerson) SwitchToFirstPerson();
             else SwitchToThirdPerson();
         }

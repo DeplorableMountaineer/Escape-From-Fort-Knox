@@ -56,7 +56,7 @@ namespace Deplorable_Mountaineer.Code_Library.Queues {
                 i = ParentIndex(i - 1) + 1;
             }
 
-            _data[i] = item;
+            _data[i - 1] = item;
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
     /// <summary>
     /// Search tree node
     /// </summary>
-    /// <typeparam name="TS">State type</typeparam>
+    /// <typeparam name="TS">StateData type</typeparam>
     /// <typeparam name="TA">Action type</typeparam>
     public class Node<TS, TA> : IComparable<Node<TS, TA>>, IComparable {
         /// <summary>
@@ -14,7 +14,7 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
         public float TieBreaker { get; set; }
 
         /// <summary>
-        /// Each node is associated with some state.  
+        /// Each node is associated with some stateData.  
         /// </summary>
         public TS State { get; set; }
 
@@ -24,7 +24,7 @@ namespace Deplorable_Mountaineer.Code_Library.Searching {
         public Node<TS, TA> Parent { get; set; }
 
         /// <summary>
-        /// The action used to get from the parent node's state to this node's state
+        /// The action used to get from the parent node's stateData to this node's stateData
         /// </summary>
         public TA Action { get; set; }
 

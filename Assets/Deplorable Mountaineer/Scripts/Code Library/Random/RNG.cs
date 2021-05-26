@@ -31,9 +31,9 @@ namespace Deplorable_Mountaineer.Code_Library {
         }
 
         /// <summary>
-        /// Set the state of the random number generator
+        /// Set the stateData of the random number generator
         /// </summary>
-        /// <param name="seed">The state to set</param>
+        /// <param name="seed">The stateData to set</param>
         public void SetSeed(long seed = 0){
             _state = seed == 0 ? DateTime.Now.Ticks : seed;
         }
