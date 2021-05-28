@@ -22,6 +22,7 @@ namespace Deplorable_Mountaineer.Drone {
 
         [SerializeField] private AudioSource audioSourceComponent;
         [SerializeField, ReadOnly] private Vector3 home;
+        [SerializeField, ReadOnly] private Vector3 homeFacing;
 
         private readonly List<DroneWaypoint> _waypoints = new List<DroneWaypoint>();
         private bool _usingWaypoints;
@@ -37,9 +38,15 @@ namespace Deplorable_Mountaineer.Drone {
         private Rigidbody _rigidbody;
 
         private bool _shouldFaceTarget = false;
+        private bool _shouldFaceDirection = false;
+        private Vector3 _directionToFace = Vector3.forward;
+        private DroneWaypoint _currentWaypoint;
+        private int _numStateUpdates;
 
         private void OnValidate(){
-            home = transform.position;
+            Transform t = transform;
+            home = t.position;
+            homeFacing = t.forward;
             if(!audioSourceComponent) audioSourceComponent = GetComponent<AudioSource>();
             if(eyes && !sense) sense = eyes.GetComponentInChildren<Sensing>();
             if(target || string.IsNullOrWhiteSpace(targetTag)) return;
@@ -77,6 +84,11 @@ namespace Deplorable_Mountaineer.Drone {
 
         private void FixedUpdate(){
             if(_shouldFaceTarget) FaceTarget(Time.deltaTime);
+            if(_shouldFaceDirection) FaceDirection(_directionToFace, Time.deltaTime);
+
+            //try to keep drone right-side up
+            Transform t = transform;
+            Vector3 forward = t.forward;
         }
 
         private void StartUpdating(DroneState droneState, float delay){
@@ -109,6 +121,8 @@ namespace Deplorable_Mountaineer.Drone {
                 case DroneState.Exploding:
                     break;
                 case DroneState.GoingHome:
+                    _stateUpdateCoroutines[droneState] =
+                        StartCoroutine(UpdateGoingHomeState());
                     break;
                 case DroneState.Disabled:
                     break;
@@ -117,6 +131,14 @@ namespace Deplorable_Mountaineer.Drone {
                 case DroneState.Reacquiring:
                     _stateUpdateCoroutines[droneState] =
                         StartCoroutine(UpdateReacquiringState());
+                    break;
+                case DroneState.FollowingWaypointsHome:
+                    _stateUpdateCoroutines[droneState] =
+                        StartCoroutine(UpdateFollowingWaypointsHomeState());
+                    break;
+                case DroneState.DirectlyHome:
+                    _stateUpdateCoroutines[droneState] =
+                        StartCoroutine(UpdateDirectlyHomeState());
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(droneState), droneState,
@@ -127,7 +149,8 @@ namespace Deplorable_Mountaineer.Drone {
         private void StopUpdating(DroneState droneState){
             Debug.Log($"{this} no longer updating {droneState}");
             if(_stateUpdateCoroutines.ContainsKey(droneState))
-                StopCoroutine(_stateUpdateCoroutines[droneState]);
+                if(_stateUpdateCoroutines[droneState] != null)
+                    StopCoroutine(_stateUpdateCoroutines[droneState]);
             _stateUpdateCoroutines.Remove(droneState);
         }
 
@@ -168,6 +191,7 @@ namespace Deplorable_Mountaineer.Drone {
                 case DroneState.Exploding:
                     break;
                 case DroneState.GoingHome:
+                    EnterGoingHomeState();
                     break;
                 case DroneState.Disabled:
                     break;
@@ -175,6 +199,12 @@ namespace Deplorable_Mountaineer.Drone {
                     break;
                 case DroneState.Reacquiring:
                     EnterReacquiringState();
+                    break;
+                case DroneState.FollowingWaypointsHome:
+                    EnterFollowingWaypointsHomeState();
+                    break;
+                case DroneState.DirectlyHome:
+                    EnterDirectlyHomeState();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(s), s, null);
@@ -205,6 +235,7 @@ namespace Deplorable_Mountaineer.Drone {
                 case DroneState.Exploding:
                     break;
                 case DroneState.GoingHome:
+                    ExitGoingHomeState(next);
                     break;
                 case DroneState.Disabled:
                     break;
@@ -212,6 +243,12 @@ namespace Deplorable_Mountaineer.Drone {
                     break;
                 case DroneState.Reacquiring:
                     ExitReacquiringState(next);
+                    break;
+                case DroneState.FollowingWaypointsHome:
+                    ExitFollowingWaypointsHomeState(next);
+                    break;
+                case DroneState.DirectlyHome:
+                    ExitDirectlyHomeState(next);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(s), s, null);
@@ -226,6 +263,9 @@ namespace Deplorable_Mountaineer.Drone {
             }
 
             _shouldFaceTarget = false;
+            _shouldFaceDirection = true;
+            _directionToFace = homeFacing;
+            _numStateUpdates = 0;
         }
 
         private IEnumerator UpdateGuardingState(){
@@ -236,6 +276,9 @@ namespace Deplorable_Mountaineer.Drone {
                         break;
                     }
                 }
+
+                _shouldFaceDirection = true;
+                _directionToFace = homeFacing;
 
                 if(_stateProperties.ContainsKey(DroneState.Guarding)){
                     _rigidbody.velocity =
@@ -249,7 +292,9 @@ namespace Deplorable_Mountaineer.Drone {
         private void ExitGuardingState(DroneState nextState){
             if(!_stateProperties.ContainsKey(nextState))
                 StopAudio();
+            StopUpdating(state);
             _shouldFaceTarget = false;
+            _shouldFaceDirection = false;
         }
 
         private void EnterReacquiringState(){
@@ -260,6 +305,8 @@ namespace Deplorable_Mountaineer.Drone {
             }
 
             _shouldFaceTarget = TargetIsAlive();
+            _shouldFaceDirection = false;
+            _numStateUpdates = 0;
         }
 
         private IEnumerator UpdateReacquiringState(){
@@ -292,6 +339,8 @@ namespace Deplorable_Mountaineer.Drone {
             if(!_stateProperties.ContainsKey(nextState))
                 StopAudio();
             _shouldFaceTarget = false;
+            _shouldFaceDirection = false;
+            StopUpdating(state);
         }
 
         private void EnterChasingState(){
@@ -302,6 +351,8 @@ namespace Deplorable_Mountaineer.Drone {
             }
 
             _shouldFaceTarget = TargetIsAlive();
+            _shouldFaceDirection = false;
+            _numStateUpdates = 0;
         }
 
         private IEnumerator UpdateChasingState(){
@@ -330,6 +381,8 @@ namespace Deplorable_Mountaineer.Drone {
             if(!_stateProperties.ContainsKey(nextState))
                 StopAudio();
             _shouldFaceTarget = false;
+            _shouldFaceDirection = false;
+            StopUpdating(state);
         }
 
         private void EnterSeekingState(){
@@ -340,6 +393,8 @@ namespace Deplorable_Mountaineer.Drone {
             }
 
             _shouldFaceTarget = false;
+            _shouldFaceDirection = false;
+            _numStateUpdates = 0;
         }
 
         private IEnumerator UpdateSeekingState(){
@@ -350,10 +405,31 @@ namespace Deplorable_Mountaineer.Drone {
                     break;
                 }
 
+
                 if(_stateProperties.ContainsKey(DroneState.Seeking)){
                     _rigidbody.velocity =
                         transform.forward*_stateProperties[DroneState.Seeking].velocity;
                 }
+
+                _numStateUpdates++;
+                if(_numStateUpdates > 10/_updateRate){
+                    TransitionState(DroneState.GoingHome);
+                    break;
+                }
+
+                Vector3 pos = transform.position;
+                if(sense && sense.CanSenseTarget() &&
+                   CanSeeLocation(pos, target.position)){
+                    TransitionState(DroneState.Reacquiring);
+                    break;
+                }
+
+                for(int i = 0; i < 50; i++){
+                    _shouldFaceDirection = true;
+                    _directionToFace = Rng.Random.UnitNormal3(_directionToFace, 56f/(51f - i));
+                    if(CanSeeLocation(pos, pos + _directionToFace*(51f - i)/5f)) break;
+                }
+
 
                 yield return new WaitForSeconds(_updateRate);
             }
@@ -363,6 +439,8 @@ namespace Deplorable_Mountaineer.Drone {
             if(!_stateProperties.ContainsKey(nextState))
                 StopAudio();
             _shouldFaceTarget = false;
+            _shouldFaceDirection = false;
+            StopUpdating(state);
         }
 
         private void EnterAttackingState(){
@@ -373,6 +451,8 @@ namespace Deplorable_Mountaineer.Drone {
             }
 
             _shouldFaceTarget = TargetIsAlive();
+            _shouldFaceDirection = false;
+            _numStateUpdates = 0;
         }
 
         private IEnumerator UpdateAttackingState(){
@@ -394,6 +474,8 @@ namespace Deplorable_Mountaineer.Drone {
                         transform.forward*_stateProperties[DroneState.Attacking].velocity;
                 }
 
+                _numStateUpdates++;
+
                 yield return new WaitForSeconds(_updateRate);
             }
         }
@@ -402,6 +484,8 @@ namespace Deplorable_Mountaineer.Drone {
             if(!_stateProperties.ContainsKey(nextState))
                 StopAudio();
             _shouldFaceTarget = false;
+            _shouldFaceDirection = false;
+            StopUpdating(state);
         }
 
 
@@ -413,6 +497,9 @@ namespace Deplorable_Mountaineer.Drone {
             }
 
             _shouldFaceTarget = false;
+            _shouldFaceDirection = true;
+            _directionToFace = transform.forward;
+            _numStateUpdates = 0;
         }
 
         private IEnumerator UpdateGoingHomeState(){
@@ -427,6 +514,25 @@ namespace Deplorable_Mountaineer.Drone {
                         transform.forward*_stateProperties[DroneState.GoingHome].velocity;
                 }
 
+                _numStateUpdates++;
+
+                //find a waypoint
+                _currentWaypoint = FindWaypointNear(transform.position);
+                if(_currentWaypoint){
+                    Debug.Log($"First waypoint: {_currentWaypoint}");
+                    TransitionState(DroneState.FollowingWaypointsHome);
+                    break;
+                }
+
+                //wander until waypoint found
+                Vector3 pos = transform.position;
+
+                for(int i = 0; i < 50; i++){
+                    _directionToFace = Rng.Random.UnitNormal3(_directionToFace, 56f/(51f - i));
+                    if(CanSeeLocation(pos, pos + _directionToFace*(51f - i)/5f)) break;
+                }
+
+
                 yield return new WaitForSeconds(_updateRate);
             }
         }
@@ -435,6 +541,142 @@ namespace Deplorable_Mountaineer.Drone {
             if(!_stateProperties.ContainsKey(nextState))
                 StopAudio();
             _shouldFaceTarget = false;
+            _shouldFaceDirection = false;
+            StopUpdating(state);
+        }
+
+        private void EnterFollowingWaypointsHomeState(){
+            if(_stateProperties.ContainsKey(DroneState.FollowingWaypointsHome)){
+                SetAudio(_stateProperties[DroneState.FollowingWaypointsHome]);
+                _rigidbody.velocity =
+                    transform.forward*_stateProperties[DroneState.FollowingWaypointsHome]
+                        .velocity;
+            }
+
+            _shouldFaceTarget = false;
+            _shouldFaceDirection = true;
+            _directionToFace = transform.forward;
+            _numStateUpdates = 0;
+        }
+
+        private IEnumerator UpdateFollowingWaypointsHomeState(){
+            while(enabled && _updateRate > 0){
+                if(sense && sense.CanSenseTarget()){
+                    TransitionState(DroneState.Reacquiring);
+                    break;
+                }
+
+                if(_stateProperties.ContainsKey(DroneState.FollowingWaypointsHome)){
+                    _rigidbody.velocity =
+                        transform.forward*_stateProperties[DroneState.FollowingWaypointsHome]
+                            .velocity;
+                }
+
+                _numStateUpdates++;
+
+                if(!_currentWaypoint){
+                    TransitionState(DroneState.GoingHome);
+                    break;
+                }
+
+                Vector3 pos = transform.position;
+
+                if(IsAtWaypoint(pos, _currentWaypoint.Position)){
+                    if(CanSeeLocation(pos, home)){
+                        TransitionState(DroneState.DirectlyHome);
+                    }
+
+                    _currentWaypoint = FindNextWaypointOnPath(transform.position, home);
+                    Debug.Log($"Next waypoint: {_currentWaypoint}");
+                    if(!_currentWaypoint){
+                        TransitionState(DroneState.GoingHome);
+                        break;
+                    }
+                }
+
+                _directionToFace = (_currentWaypoint.Position - pos).normalized;
+                if(!CanSeeLocation(pos, _currentWaypoint.Position))
+                    for(int i = 0; i < 50; i++){
+                        if(CanSeeLocation(pos, pos + _directionToFace*(51f - i)/5f)) break;
+                        _directionToFace = Rng.Random.UnitNormal3(_directionToFace, 5);
+                    }
+
+
+                Debug.Log(
+                    $"wp={_currentWaypoint.name.Substring(10)} pos={pos} direction={_directionToFace} wp={_currentWaypoint.Position} bestDir = {(_currentWaypoint.Position - pos).normalized}");
+
+
+                yield return new WaitForSeconds(_updateRate);
+            }
+        }
+
+        private void ExitFollowingWaypointsHomeState(DroneState nextState){
+            if(!_stateProperties.ContainsKey(nextState))
+                StopAudio();
+            _shouldFaceTarget = false;
+            _shouldFaceDirection = false;
+            StopUpdating(state);
+        }
+
+        private void EnterDirectlyHomeState(){
+            if(_stateProperties.ContainsKey(DroneState.DirectlyHome)){
+                SetAudio(_stateProperties[DroneState.DirectlyHome]);
+                _rigidbody.velocity =
+                    transform.forward*_stateProperties[DroneState.DirectlyHome]
+                        .velocity;
+            }
+
+            _shouldFaceTarget = false;
+            _shouldFaceDirection = true;
+            _directionToFace = transform.forward;
+            _numStateUpdates = 0;
+        }
+
+        private IEnumerator UpdateDirectlyHomeState(){
+            while(enabled && _updateRate > 0){
+                if(sense && sense.CanSenseTarget()){
+                    TransitionState(DroneState.Reacquiring);
+                    break;
+                }
+
+                if(_stateProperties.ContainsKey(DroneState.DirectlyHome)){
+                    _rigidbody.velocity =
+                        transform.forward*_stateProperties[DroneState.DirectlyHome].velocity;
+                }
+
+                Vector3 pos = transform.position;
+
+                if(IsAtWaypoint(pos, home)){
+                    TransitionState(DroneState.Guarding);
+                    break;
+                }
+
+                _numStateUpdates++;
+
+                _directionToFace = (home - pos).normalized;
+
+                if(!CanSeeLocation(pos, home)){
+                    for(int i = 0; i < 10; i++){
+                        if(CanSeeLocation(pos, pos + _directionToFace*2)) break;
+                        _directionToFace = Rng.Random.UnitNormal3(_directionToFace, 1);
+                    }
+
+                    if(_numStateUpdates > 20/_updateRate && !CanSeeLocation(pos, home)){
+                        TransitionState(DroneState.GoingHome);
+                        break;
+                    }
+                }
+
+                yield return new WaitForSeconds(_updateRate);
+            }
+        }
+
+        private void ExitDirectlyHomeState(DroneState nextState){
+            if(!_stateProperties.ContainsKey(nextState))
+                StopAudio();
+            _shouldFaceTarget = false;
+            _shouldFaceDirection = false;
+            StopUpdating(state);
         }
 
         private void StopAudio(){
@@ -463,8 +705,13 @@ namespace Deplorable_Mountaineer.Drone {
 
         private void FaceDirection(Vector3 direction, float deltaTime){
             Vector3 current = transform.forward;
+            if(Mathf.Abs(Vector3.Dot(current, Vector3.up)) < .9f){
+                transform.up = Vector3.MoveTowards(transform.up, Vector3.up,
+                    deltaTime);
+            }
+
             transform.forward = Vector3.MoveTowards(current, direction,
-                deltaTime);
+                deltaTime*2);
         }
 
         private void SetAudio(StateProperties afs){
@@ -500,7 +747,7 @@ namespace Deplorable_Mountaineer.Drone {
 
         private DroneWaypoint FindNextWaypointOnPath(Vector3 start, Vector3 end){
             DroneWaypoint lastWaypoint = FindWaypointNear(end);
-            if(CanSeeWaypoint(start, lastWaypoint.Position)) return lastWaypoint;
+            if(CanSeeLocation(start, lastWaypoint.Position)) return lastWaypoint;
             DroneWaypoint firstWaypoint = FindWaypointNear(start);
             if(firstWaypoint == lastWaypoint) return firstWaypoint;
             if(!IsAtWaypoint(start, firstWaypoint.Position)) return firstWaypoint;
@@ -544,7 +791,7 @@ namespace Deplorable_Mountaineer.Drone {
             }
         }
 
-        private bool CanSeeWaypoint(Vector3 location, Vector3 waypoint){
+        private bool CanSeeLocation(Vector3 location, Vector3 waypoint){
             Vector3 offset = waypoint - location;
             float distance = offset.magnitude;
             if(distance < Mathf.Epsilon) return true;
@@ -555,7 +802,7 @@ namespace Deplorable_Mountaineer.Drone {
         }
 
         private bool IsAtWaypoint(Vector3 location, Vector3 waypoint){
-            return Vector3.Distance(location, waypoint) < .1f;
+            return Vector3.Distance(location, waypoint) < .5f;
         }
 
 
@@ -574,8 +821,6 @@ namespace Deplorable_Mountaineer.Drone {
 
                 if(!checkStraightLine || distance >= bestStraightLineDistance) continue;
                 if(distance < Mathf.Epsilon){
-                    bestStraightLine = wp;
-                    bestStraightLineDistance = distance;
                     return wp;
                 }
 
@@ -614,7 +859,9 @@ namespace Deplorable_Mountaineer.Drone {
             GoingHome,
             Disabled,
             Dead,
-            Reacquiring
+            Reacquiring,
+            FollowingWaypointsHome,
+            DirectlyHome,
         }
     }
 }

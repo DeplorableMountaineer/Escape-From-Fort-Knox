@@ -8,6 +8,7 @@ namespace Deplorable_Mountaineer.Drone {
         [FormerlySerializedAs("_neighbors")] [SerializeField, ReadOnly]
         public List<DroneWaypoint> neighbors = new List<DroneWaypoint>();
 
+        private bool _running;
         public Vector3 Position => transform.position;
 
         public float PathfindingDistanceToGoal { get; set; }
@@ -21,7 +22,7 @@ namespace Deplorable_Mountaineer.Drone {
         }
 
         private void OnDrawGizmosSelected(){
-            AutoPopulate();
+            if(!_running) AutoPopulate();
             foreach(DroneWaypoint wp in neighbors){
                 Gizmos.color = wp.neighbors.Contains(this)
                     ? new Color(0, 1, 0, .5f)
@@ -31,6 +32,7 @@ namespace Deplorable_Mountaineer.Drone {
         }
 
         private void Awake(){
+            _running = true;
             AutoPopulate();
         }
 

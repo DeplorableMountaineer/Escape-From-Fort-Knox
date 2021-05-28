@@ -5,11 +5,14 @@ namespace Deplorable_Mountaineer.Drone {
         [SerializeField] private Transform target;
         [SerializeField] private string targetTag = "Player";
         [SerializeField] private float sightConeHalfAngle = 30;
-        [SerializeField] private float sightConeDistance = 10;
+        [SerializeField] private float sightConeDistance = 20;
+        [SerializeField] private float hearingDistance = 5;
 
         private Transform _transform;
-        private int _frameChecked = -1;
+        private int _seenFrameChecked = -1;
+        private int _heardFrameChecked = -1;
         private bool _seen = false;
+        private bool _heard = false;
 
         private void OnValidate(){
             if(target || string.IsNullOrWhiteSpace(targetTag)) return;
@@ -26,13 +29,24 @@ namespace Deplorable_Mountaineer.Drone {
         }
 
         public bool CanLocateTarget(){
-            return CanSeeTarget();
+            return CanSeeTarget() || CanHearTarget();
+        }
+
+        private bool CanHearTarget(){
+            if(!target) return _heard = false;
+            if(_heardFrameChecked == Time.frameCount) return _heard;
+            _heardFrameChecked = Time.frameCount;
+            Vector3 position = _transform.position;
+            Vector3 targetPos = target.position;
+            Vector3 offset = targetPos - position;
+            float distance = offset.magnitude;
+            return distance <= hearingDistance;
         }
 
         private bool CanSeeTarget(){
             if(!target) return _seen = false;
-            if(_frameChecked == Time.frameCount) return _seen;
-            _frameChecked = Time.frameCount;
+            if(_seenFrameChecked == Time.frameCount) return _seen;
+            _seenFrameChecked = Time.frameCount;
             Vector3 position = _transform.position;
             Vector3 targetPos = target.position;
             Vector3 offset = targetPos - position;

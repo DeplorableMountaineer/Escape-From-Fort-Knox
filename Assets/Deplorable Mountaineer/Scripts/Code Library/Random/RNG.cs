@@ -202,6 +202,10 @@ namespace Deplorable_Mountaineer.Code_Library {
                 c*Mathf.Cos(azimuth));
         }
 
+        public Vector3 UnitNormal3(Vector3 axis, float maxHalfAngle){
+            return Quaternion.FromToRotation(Vector3.forward, axis)*UnitNormal3(maxHalfAngle);
+        }
+
         private static int Next(ref long state, int minInclusive = 0,
             int maxExclusive = int.MaxValue){
             state = (state*Multiplier + Increment)%Modulus;
