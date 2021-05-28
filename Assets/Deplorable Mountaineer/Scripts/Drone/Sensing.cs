@@ -25,11 +25,11 @@ namespace Deplorable_Mountaineer.Drone {
         }
 
         public bool CanSenseTarget(){
-            return CanSeeTarget();
+            return CanSeeTarget() || CanHearTarget();
         }
 
         public bool CanLocateTarget(){
-            return CanSeeTarget() || CanHearTarget();
+            return CanSeeTarget();
         }
 
         private bool CanHearTarget(){

@@ -16,6 +16,8 @@ namespace Deplorable_Mountaineer.Drone {
         [SerializeField] private float attackHalfAngle = 10;
         [SerializeField] private Transform target;
         [SerializeField] private DroneState state = DroneState.Guarding;
+        [SerializeField] private Camera droneCam;
+        [SerializeField] private float cameraRenderInterval = .1f;
 
         [FormerlySerializedAs("audioForStates")] [SerializeField]
         private StateProperties[] stateProperties;
@@ -42,9 +44,11 @@ namespace Deplorable_Mountaineer.Drone {
         private Vector3 _directionToFace = Vector3.forward;
         private DroneWaypoint _currentWaypoint;
         private int _numStateUpdates;
+        private Coroutine _renderCoroutine;
 
         private void OnValidate(){
             Transform t = transform;
+            if(eyes && !droneCam) droneCam = eyes.GetComponentInChildren<Camera>();
             home = t.position;
             homeFacing = t.forward;
             if(!audioSourceComponent) audioSourceComponent = GetComponent<AudioSource>();
@@ -74,9 +78,11 @@ namespace Deplorable_Mountaineer.Drone {
                 _updateRate = _stateProperties[state].deltaTime;
             else _updateRate = 1;
             StartUpdating(state, Rng.Random.NextFloat(0, _updateRate));
+            _renderCoroutine = StartCoroutine(RenderCoroutine());
         }
 
         private void OnDisable(){
+            if(_renderCoroutine != null) StopCoroutine(_renderCoroutine);
             _updateRate = 1000;
             StopUpdating(state);
             ExitState(state, DroneState.Disabled);
@@ -601,11 +607,6 @@ namespace Deplorable_Mountaineer.Drone {
                         _directionToFace = Rng.Random.UnitNormal3(_directionToFace, 5);
                     }
 
-
-                Debug.Log(
-                    $"wp={_currentWaypoint.name.Substring(10)} pos={pos} direction={_directionToFace} wp={_currentWaypoint.Position} bestDir = {(_currentWaypoint.Position - pos).normalized}");
-
-
                 yield return new WaitForSeconds(_updateRate);
             }
         }
@@ -805,7 +806,6 @@ namespace Deplorable_Mountaineer.Drone {
             return Vector3.Distance(location, waypoint) < .5f;
         }
 
-
         private DroneWaypoint FindWaypointNear(Vector3 location,
             bool checkStraightLine = true){
             DroneWaypoint best = null;
@@ -835,6 +835,16 @@ namespace Deplorable_Mountaineer.Drone {
             if(checkStraightLine && !float.IsInfinity(bestStraightLineDistance))
                 return bestStraightLine;
             return best;
+        }
+
+
+        private IEnumerator RenderCoroutine(){
+            if(!droneCam) yield break;
+            yield return new WaitForSeconds(Rng.Random.NextFloat(0, cameraRenderInterval));
+            while(enabled){
+                yield return new WaitForSeconds(cameraRenderInterval);
+                droneCam.Render();
+            }
         }
 
         [Serializable]
