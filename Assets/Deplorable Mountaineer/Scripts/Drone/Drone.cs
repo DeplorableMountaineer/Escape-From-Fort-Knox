@@ -2,13 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using Deplorable_Mountaineer.Code_Library;
+using Deplorable_Mountaineer.Code_Library.Mover;
 using Deplorable_Mountaineer.EditorUtils.Attributes;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Deplorable_Mountaineer.Drone {
     [RequireComponent(typeof(AudioSource), typeof(Rigidbody))]
-    public class Drone : MonoBehaviour {
+    public class Drone : MonoBehaviour, IObjectState {
         [SerializeField] private string targetTag = "Player";
         [SerializeField] private Transform eyes;
         [SerializeField] private Sensing sense;
@@ -46,6 +50,12 @@ namespace Deplorable_Mountaineer.Drone {
         private int _numStateUpdates;
         private Coroutine _renderCoroutine;
 
+        private void Reset(){
+#if UNITY_EDITOR
+            stateData.id = GUID.Generate().ToString();
+#endif
+        }
+        
         private void OnValidate(){
             Transform t = transform;
             if(eyes && !droneCam) droneCam = eyes.GetComponentInChildren<Camera>();
@@ -53,6 +63,11 @@ namespace Deplorable_Mountaineer.Drone {
             homeFacing = t.forward;
             if(!audioSourceComponent) audioSourceComponent = GetComponent<AudioSource>();
             if(eyes && !sense) sense = eyes.GetComponentInChildren<Sensing>();
+#if UNITY_EDITOR
+            if(string.IsNullOrWhiteSpace(stateData.id))
+                stateData.id = GUID.Generate().ToString();
+#endif
+
             if(target || string.IsNullOrWhiteSpace(targetTag)) return;
             GameObject go = GameObject.FindGameObjectWithTag(targetTag);
             if(go) target = go.transform;
@@ -872,6 +887,31 @@ namespace Deplorable_Mountaineer.Drone {
             Reacquiring,
             FollowingWaypointsHome,
             DirectlyHome,
+        }
+
+        public StateData stateData = new StateData();
+
+        public void GetState(){
+            stateData.velocity = _rigidbody.velocity;
+            stateData.position = _rigidbody.position;
+            stateData.eulerAngles = _rigidbody.rotation.eulerAngles;
+            stateData.state = state;
+        }
+
+        public void SetState(){
+            _rigidbody.velocity = stateData.velocity;
+            _rigidbody.position = stateData.position;
+            transform.eulerAngles = stateData.eulerAngles;
+            TransitionState(stateData.state);
+        }
+
+        [Serializable]
+        public class StateData {
+            public Vector3 velocity;
+            public Vector3 position;
+            public Vector3 eulerAngles;
+            public DroneState state;
+            public string id;
         }
     }
 }

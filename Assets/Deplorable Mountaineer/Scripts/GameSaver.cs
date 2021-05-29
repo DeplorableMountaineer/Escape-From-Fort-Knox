@@ -45,8 +45,24 @@ namespace Deplorable_Mountaineer {
         private void SetGameState(GameState state){
             SetPlayerState(state);
             SetPhysicsBodyStates(state);
+            SetDroneStates(state);
             SetInitialSwitchState(state);
             state.gameTime = GameEvents.Instance.GameTimeAddend + Time.time;
+        }
+
+        private void SetDroneStates(GameState state){
+            Dictionary<string, Drone.Drone> drones =
+                new Dictionary<string, Drone.Drone>();
+            foreach(Drone.Drone d in FindObjectsOfType<Drone.Drone>()){
+                drones[d.stateData.id] = d;
+            }
+
+            foreach(Drone.Drone.StateData dData in state.droneStates){
+                if(drones.ContainsKey(dData.id)){
+                    drones[dData.id].stateData = dData;
+                    drones[dData.id].SetState();
+                }
+            }
         }
 
         private void SetPhysicsBodyStates(GameState state){
@@ -114,9 +130,22 @@ namespace Deplorable_Mountaineer {
             GameState state = new GameState();
             GetPlayerState(state);
             GetPhysicsBodyStates(state);
+            GetDroneStates(state);
             GetInitialSwitchState(state);
             GameEvents.Instance.GameTimeAddend = state.gameTime - Time.time;
             return state;
+        }
+
+        private void GetDroneStates(GameState state){
+            state.droneStates.Clear();
+            foreach(Drone.Drone d in FindObjectsOfType<Drone.Drone>()){
+                GetDroneState(state, d);
+            }
+        }
+
+        private void GetDroneState(GameState state, Drone.Drone drone){
+            drone.GetState();
+            state.droneStates.Add(drone.stateData);
         }
 
         private void GetInitialSwitchState(GameState state){
@@ -161,6 +190,9 @@ namespace Deplorable_Mountaineer {
 
             public List<PhysicsBodyState.StateData> physicsBodyStates =
                 new List<PhysicsBodyState.StateData>();
+
+            public List<Drone.Drone.StateData> droneStates =
+                new List<Drone.Drone.StateData>();
 
             public string Serialize(){
                 return JsonUtility.ToJson(this);
