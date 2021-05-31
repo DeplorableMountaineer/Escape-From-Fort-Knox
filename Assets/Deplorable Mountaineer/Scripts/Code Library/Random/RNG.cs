@@ -202,6 +202,12 @@ namespace Deplorable_Mountaineer.Code_Library {
                 c*Mathf.Cos(azimuth));
         }
 
+        /// <summary>
+        /// Return a random 3D vector of magnitude 1 no more than the specified
+        /// number of degrees from the specified axis direction
+        /// </summary>
+        /// <param name="maxHalfAngle">Radius of direction limits</param>
+        /// <returns>A random direction</returns>
         public Vector3 UnitNormal3(Vector3 axis, float maxHalfAngle){
             return Quaternion.FromToRotation(Vector3.forward, axis)*UnitNormal3(maxHalfAngle);
         }

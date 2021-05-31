@@ -3,7 +3,22 @@ guid: 8fe5ce2d032cba24f9514cf7e454f40e
 ModelImporter:
   serializedVersion: 21100
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Red
+    second: {fileID: 2100000, guid: 179833d0ada652b4eb2348d598ba6c4a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Scanner
+    second: {fileID: 2100000, guid: bd726baccb0f560478f92cdcbd2395a3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: White
+    second: {fileID: 2100000, guid: c8ef9a8e04bc1d6449490915e1674a39, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

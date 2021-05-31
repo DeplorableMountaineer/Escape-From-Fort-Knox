@@ -8,6 +8,7 @@ namespace Deplorable_Mountaineer {
         private void OnTriggerEnter(Collider other){
             if(!other.CompareTag("Player")) return;
             if(MessageEvent == null) return;
+            if(MessageEvent.Condition != null && !MessageEvent.Condition.Invoke()) return;
             if(MessageEvent.AudioMessage)
                 GameEvents.Instance.Message(MessageEvent.AudioMessage);
             else GameEvents.Instance.Message(MessageEvent.TextMessage);

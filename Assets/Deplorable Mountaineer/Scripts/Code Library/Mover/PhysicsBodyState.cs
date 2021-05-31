@@ -33,6 +33,8 @@ namespace Deplorable_Mountaineer.Code_Library.Mover {
             stateData.velocity = rb.velocity;
             stateData.position = rb.position;
             stateData.eulerAngles = rb.rotation.eulerAngles;
+            Health h = GetComponent<Health>();
+            if(h) stateData.health = h.Amount;
         }
 
         public void SetState(){
@@ -40,6 +42,13 @@ namespace Deplorable_Mountaineer.Code_Library.Mover {
             rb.velocity = stateData.velocity;
             rb.position = stateData.position;
             transform.eulerAngles = stateData.eulerAngles;
+            Health h = GetComponent<Health>();
+            if(!h) return;
+            if(stateData.health <= Mathf.Epsilon){
+                h.spawnOnDeath = null;
+            }
+
+            h.Amount = stateData.health;
         }
 
         [Serializable]
@@ -47,6 +56,7 @@ namespace Deplorable_Mountaineer.Code_Library.Mover {
             public Vector3 velocity;
             public Vector3 position;
             public Vector3 eulerAngles;
+            public float health;
             public string id;
         }
     }

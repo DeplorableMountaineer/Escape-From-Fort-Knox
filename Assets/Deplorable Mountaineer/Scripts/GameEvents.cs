@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Deplorable_Mountaineer.Code_Library.Queues;
 using Deplorable_Mountaineer.Movers;
 using Deplorable_Mountaineer.Singleton;
 using Deplorable_Mountaineer.UI;
+using Standard_Assets.Characters.FirstPersonCharacter;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Deplorable_Mountaineer {
     public class GameEvents : PersistentSingleton<GameEvents> {
@@ -45,6 +48,18 @@ namespace Deplorable_Mountaineer {
                 TriggerId = "Vent Trigger",
                 CancelTriggerId = "Fire Trigger",
                 TextMessage = "Hmmm...feels like \"Alien\""
+            });
+
+            _messageEvents.Add(new MessageEvent() {
+                TriggerId = "Gun Trigger",
+                Condition = () => !FindObjectOfType<PlayerGun>().enabled,
+                TextMessage = "I should have taken that gun when I had a chance..."
+            });
+            
+            _messageEvents.Add(new MessageEvent() {
+                TriggerId = "Made It Trigger",
+                Condition = () => !FindObjectOfType<PlayerGun>().enabled,
+                TextMessage = "Not the exit I expected, but I made it outside!"
             });
 
             foreach(MessageEvent me in _messageEvents){
@@ -91,6 +106,22 @@ namespace Deplorable_Mountaineer {
 
         public void Message(AudioClip clip){
             HudMessage.Message(clip);
+        }
+
+
+        public void OnPlayerDead(){
+            Message("Player is dead.  Game reloading.");
+            FindObjectOfType<CharacterController>().enabled = false;
+            FindObjectOfType<FirstPersonController>().enabled = false;
+            FindObjectOfType<PlayerGun>().enabled = false;
+            StartCoroutine(ReloadGame());
+        }
+
+        private IEnumerator ReloadGame(){
+            yield return new WaitForSeconds(5);
+            FindObjectOfType<CharacterController>().enabled = true;
+            FindObjectOfType<FirstPersonController>().enabled = true;
+            GameSaver.Instance.ResetGame();
         }
 
         public class MessageEvent : IComparable<MessageEvent>, IComparable {

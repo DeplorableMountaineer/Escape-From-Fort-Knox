@@ -1,4 +1,6 @@
-﻿using Deplorable_Mountaineer.UI;
+﻿using System.Collections;
+using Deplorable_Mountaineer.Code_Library.Mover;
+using Deplorable_Mountaineer.UI;
 using UnityEngine;
 
 namespace Deplorable_Mountaineer {
@@ -6,8 +8,10 @@ namespace Deplorable_Mountaineer {
         [SerializeField] private float startingValue = 100;
         [SerializeField] private float maxValue = 100;
         [SerializeField] private ValueBar healthBar;
+        [SerializeField] public GameObject spawnOnDeath;
 
         private float _health;
+        private Rigidbody _rigidbody;
 
         public float Amount {
             get => _health;
@@ -16,6 +20,10 @@ namespace Deplorable_Mountaineer {
                 _health = Mathf.Clamp(value, 0, maxValue);
                 OnHealthUpdate(old, _health, maxValue);
             }
+        }
+
+        private void Awake(){
+            _rigidbody = GetComponentInChildren<Rigidbody>();
         }
 
         private void Start(){
@@ -30,9 +38,27 @@ namespace Deplorable_Mountaineer {
             }
         }
 
+        public void AddImpulse(Vector3 force, ForceMode forceMode = ForceMode.VelocityChange){
+            if(!_rigidbody) return;
+            _rigidbody.AddForce(force, forceMode);
+        }
+
         private void OnDeath(){
-            Debug.Log("Player is dead.");
-            Debug.Break();
+            if(CompareTag("Player")){
+                GameEvents.Instance.OnPlayerDead();
+                return;
+            }
+            else{
+               
+                if(spawnOnDeath){
+                    Transform t = transform;
+                    Instantiate(spawnOnDeath, t.position, t.rotation);
+                }
+                if(GetComponentInChildren<PhysicsBodyState>()){
+                    transform.position = new Vector3(10000, 10000, 10000);
+                }
+                else Destroy(gameObject, .2f);
+            }
         }
     }
 }

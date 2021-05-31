@@ -7,6 +7,7 @@ using Deplorable_Mountaineer.Singleton;
 using Deplorable_Mountaineer.Switches;
 using Standard_Assets.Characters.FirstPersonCharacter;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Deplorable_Mountaineer {
     public class GameSaver : PersistentSingleton<GameSaver> {
@@ -16,7 +17,21 @@ namespace Deplorable_Mountaineer {
 
         private void Update(){
             if(Input.GetKeyDown(loadKey)) RestoreGame();
-            else if(Input.GetKeyDown(saveKey)) SaveGame();
+            else if(Input.GetKeyDown(saveKey)){
+                GameObject go = GameObject.FindGameObjectWithTag("Player");
+                if(go){
+                    Health h = go.GetComponent<Health>();
+                    if(h && h.Amount > 0){
+                        SaveGame();
+                        return;
+                    }
+
+                    Debug.Log($"player has no health (h={h}, amount={h.Amount})");
+                }
+                else Debug.Log("no player game object");
+
+                GameEvents.Instance.Message("Can't save when dead!");
+            }
         }
 
         public void SaveGame(string overrideSaveName = null){
@@ -91,8 +106,13 @@ namespace Deplorable_Mountaineer {
             FirstPersonController fpc = player.GetComponent<FirstPersonController>();
             fpc.mouseLook.m_CameraTargetRot = state.cameraTargetRot;
             fpc.mouseLook.m_CharacterTargetRot = state.characterTargetRot;
+            PlayerGun g = player.GetComponentInChildren<PlayerGun>();
+            g.enabled = state.hasWeapon;
+            FindObjectOfType<PlayerGunPickup>().enabled = !state.hasWeapon;
             // ReSharper disable once Unity.InefficientPropertyAccess
             cc.enabled = true;
+            Health h = player.GetComponent<Health>();
+            h.Amount = state.health;
         }
 
         private void SetInitialSwitchState(GameState state){
@@ -110,6 +130,18 @@ namespace Deplorable_Mountaineer {
             string stateString = reader.ReadToEnd();
             reader.Close();
             return stateString;
+        }
+
+        public void ResetGame(){
+            string dir = Application.persistentDataPath +
+                         Path.DirectorySeparatorChar + "SavedGame";
+            string file = dir + Path.DirectorySeparatorChar + filename;
+            if(!File.Exists(file)){
+                SceneManager.LoadScene(0);
+                return;
+            }
+
+            RestoreGame(filename);
         }
 
         private void SaveState(string saveName, string state){
@@ -174,6 +206,10 @@ namespace Deplorable_Mountaineer {
             FirstPersonController fpc = player.GetComponent<FirstPersonController>();
             state.cameraTargetRot = fpc.mouseLook.m_CameraTargetRot;
             state.characterTargetRot = fpc.mouseLook.m_CharacterTargetRot;
+            PlayerGun g = player.GetComponentInChildren<PlayerGun>();
+            state.hasWeapon = g.enabled;
+            Health h = player.GetComponent<Health>();
+            state.health = h.Amount;
         }
 
         private GameObject GetPlayer(){
@@ -182,11 +218,13 @@ namespace Deplorable_Mountaineer {
 
         [Serializable]
         public class GameState {
+            public bool hasWeapon;
             public Vector3 playerPosition;
             public Quaternion characterTargetRot;
             public Quaternion cameraTargetRot;
             public bool initialSwitchActivated;
             public float gameTime;
+            public float health;
 
             public List<PhysicsBodyState.StateData> physicsBodyStates =
                 new List<PhysicsBodyState.StateData>();

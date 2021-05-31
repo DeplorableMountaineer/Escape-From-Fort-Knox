@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1122746089057112887}
+  - component: {fileID: -8377035900817403254}
   m_Layer: 0
   m_Name: Toy_Barrel RigidBody
   m_TagString: Untagged
@@ -31,6 +32,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}
+--- !u!114 &-8377035900817403254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 351029197680216461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93ca74a3f4b846e7aae410fe102896c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingValue: 300
+  maxValue: 300
+  healthBar: {fileID: 0}
+  spawnOnDeath: {fileID: 100010, guid: 031d08f52af1daa4f929b85221519426, type: 3}
 --- !u!1 &4226445158507559644
 GameObject:
   m_ObjectHideFlags: 0

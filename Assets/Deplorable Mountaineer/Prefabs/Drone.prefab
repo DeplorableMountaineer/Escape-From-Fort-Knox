@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 188179426894936099}
   - component: {fileID: 2275858988730196071}
   m_Layer: 0
-  m_Name: Mesh
+  m_Name: Drone Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -113,6 +113,7 @@ GameObject:
   - component: {fileID: 3896675601506573176}
   - component: {fileID: 3896675601506573177}
   - component: {fileID: 3896675601506573178}
+  - component: {fileID: 2571843216518981642}
   m_Layer: 0
   m_Name: Drone
   m_TagString: Untagged
@@ -150,7 +151,7 @@ MonoBehaviour:
   targetTag: Player
   eyes: {fileID: 3378850098237163264}
   sense: {fileID: 6266225347701253143}
-  attackDistance: 1
+  attackDistance: 2
   attackHalfAngle: 10
   target: {fileID: 0}
   state: 0
@@ -244,6 +245,12 @@ MonoBehaviour:
   audioSourceComponent: {fileID: 3896675601506573177}
   home: {x: -12.26982, y: 14.35, z: 23.75}
   homeFacing: {x: -1.0000001, y: 0, z: -0.00000011920929}
+  stateData:
+    velocity: {x: 0, y: 0, z: 0}
+    position: {x: 0, y: 0, z: 0}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    state: 0
+    id: 8c628c035f1796d48b3f57cae7c15b00
 --- !u!82 &3896675601506573177
 AudioSource:
   m_ObjectHideFlags: 0
@@ -356,6 +363,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
+--- !u!114 &2571843216518981642
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3896675601506573183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 93ca74a3f4b846e7aae410fe102896c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingValue: 100
+  maxValue: 100
+  healthBar: {fileID: 0}
+  spawnOnDeath: {fileID: 100010, guid: 031d08f52af1daa4f929b85221519426, type: 3}
 --- !u!1 &6266225347701253142
 GameObject:
   m_ObjectHideFlags: 0

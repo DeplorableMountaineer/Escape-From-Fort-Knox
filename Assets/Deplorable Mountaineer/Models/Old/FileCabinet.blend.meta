@@ -3,7 +3,22 @@ guid: c6219801fab58a443bbb400866abbaa1
 ModelImporter:
   serializedVersion: 21100
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Drawer
+    second: {fileID: 2100000, guid: bd726baccb0f560478f92cdcbd2395a3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Front
+    second: {fileID: 2100000, guid: 98c7fcb41597a314abb96f444d64a4b3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Handle
+    second: {fileID: 2100000, guid: dd77f11f20797054faa50df5427552c8, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
