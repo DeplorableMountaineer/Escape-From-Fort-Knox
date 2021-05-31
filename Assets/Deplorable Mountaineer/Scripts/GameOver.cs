@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Standard_Assets.Characters.FirstPersonCharacter;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,9 +11,11 @@ namespace Deplorable_Mountaineer {
             FindObjectOfType<CharacterController>().enabled = false;
             FindObjectOfType<FirstPersonController>().enabled = false;
             FindObjectOfType<PlayerGun>().enabled = false;
-            yield return null;
-            if(Input.anyKeyDown){
-                SceneManager.LoadScene(0);
+            while(enabled){
+                yield return null;
+                if(Input.anyKeyDown){
+                    SceneManager.LoadScene(0);
+                }
             }
         }
     }

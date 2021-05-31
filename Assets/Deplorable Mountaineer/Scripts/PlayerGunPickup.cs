@@ -15,7 +15,7 @@ namespace Deplorable_Mountaineer {
             if(other.CompareTag("Player")){
                 PlayerGun g = other.GetComponentInChildren<PlayerGun>();
                 g.enabled = true;
-                GameEvents.Instance.Message("Ready for action!");
+                GameEvents.Instance.Message(GameEvents.Instance.AudioMessages["Action"]);
                 enabled = false;
             }
         }

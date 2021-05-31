@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using Deplorable_Mountaineer.Code_Library.Mover;
+﻿using Deplorable_Mountaineer.Code_Library.Mover;
+using Deplorable_Mountaineer.Drone;
 using Deplorable_Mountaineer.UI;
 using UnityEngine;
 
@@ -36,6 +36,12 @@ namespace Deplorable_Mountaineer {
                 _health = 0;
                 OnDeath();
             }
+
+            if(CompareTag("Player")) return;
+            Sensing s = GetComponentInChildren<Sensing>();
+            if(s){
+                s.GivePain();
+            }
         }
 
         public void AddImpulse(Vector3 force, ForceMode forceMode = ForceMode.VelocityChange){
@@ -49,13 +55,18 @@ namespace Deplorable_Mountaineer {
                 return;
             }
             else{
-               
+                Drone.Drone d = GetComponentInChildren<Drone.Drone>();
                 if(spawnOnDeath){
                     Transform t = transform;
                     Instantiate(spawnOnDeath, t.position, t.rotation);
                 }
+
                 if(GetComponentInChildren<PhysicsBodyState>()){
                     transform.position = new Vector3(10000, 10000, 10000);
+                }
+                else if(d){
+                    transform.position = new Vector3(10000, 10000, 10000);
+                    d.state = Drone.Drone.DroneState.Dead;
                 }
                 else Destroy(gameObject, .2f);
             }

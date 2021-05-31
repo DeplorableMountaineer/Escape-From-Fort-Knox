@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Deplorable_Mountaineer.Code_Library.Mover;
 using Deplorable_Mountaineer.Movers;
 using Deplorable_Mountaineer.Singleton;
 using Deplorable_Mountaineer.Switches;
-using Standard_Assets.Characters.FirstPersonCharacter;
+using Deplorable_Mountaineer.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -14,6 +15,11 @@ namespace Deplorable_Mountaineer {
         [SerializeField] private string filename = "SavedGame";
         [SerializeField] private KeyCode loadKey = KeyCode.F2;
         [SerializeField] private KeyCode saveKey = KeyCode.F6;
+        [SerializeField] private ValueBar volumeBar;
+
+        private void Start(){
+            volumeBar.gameObject.SetActive(false);
+        }
 
         private void Update(){
             if(Input.GetKeyDown(loadKey)) RestoreGame();
@@ -32,13 +38,28 @@ namespace Deplorable_Mountaineer {
 
                 GameEvents.Instance.Message("Can't save when dead!");
             }
+            else if(Input.GetKeyDown(KeyCode.F4)){
+                AudioListener.volume = Mathf.Clamp01(AudioListener.volume - .1f);
+                StartCoroutine(ShowVolumeBar());
+            }
+            else if(Input.GetKeyDown(KeyCode.F5)){
+                AudioListener.volume = Mathf.Clamp01(AudioListener.volume + .1f);
+                StartCoroutine(ShowVolumeBar());
+            }
+        }
+
+        private IEnumerator ShowVolumeBar(){
+            volumeBar.gameObject.SetActive(true);
+            volumeBar.Amount = AudioListener.volume;
+            yield return new WaitForSeconds(5);
+            volumeBar.gameObject.SetActive(false);
         }
 
         public void SaveGame(string overrideSaveName = null){
             GameState state = GetGameState();
             string stateString = SerializeGameState(state);
             SaveState(overrideSaveName ?? filename, stateString);
-            Debug.Log("Game saved.");
+            GameEvents.Instance.Message("Game Saved");
         }
 
         public void RestoreGame(string overrideSaveName = null){
@@ -50,7 +71,7 @@ namespace Deplorable_Mountaineer {
 
             GameState state = DeserializeGameState(stateString);
             SetGameState(state);
-            Debug.Log("Game restored.");
+            GameEvents.Instance.Message("Game Restored");
         }
 
         private GameState DeserializeGameState(string stateString){

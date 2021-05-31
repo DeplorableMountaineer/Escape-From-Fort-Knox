@@ -9,8 +9,8 @@ namespace Deplorable_Mountaineer {
             if(!other.CompareTag("Player")) return;
             if(MessageEvent == null) return;
             if(MessageEvent.Condition != null && !MessageEvent.Condition.Invoke()) return;
-            if(MessageEvent.AudioMessage)
-                GameEvents.Instance.Message(MessageEvent.AudioMessage);
+            if(MessageEvent.AudioMessageClip)
+                GameEvents.Instance.Message(MessageEvent.AudioMessageClip);
             else GameEvents.Instance.Message(MessageEvent.TextMessage);
             if(string.IsNullOrWhiteSpace(MessageEvent.CancelTriggerId)){
                 MessageEvent = null;

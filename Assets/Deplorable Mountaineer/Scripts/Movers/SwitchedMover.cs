@@ -1,11 +1,12 @@
 ﻿using Deplorable_Mountaineer.Switches;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Deplorable_Mountaineer.Movers {
     public class SwitchedMover : MonoBehaviour {
         [SerializeField] private Transform endPosition;
         [SerializeField] private float speed = 1;
-        [SerializeField] private new AudioSource audio;
+        [FormerlySerializedAs("audio")] [SerializeField] private AudioSource audioSource;
 
         private bool _activated = false;
         private Vector3 _endPosition;
@@ -20,7 +21,7 @@ namespace Deplorable_Mountaineer.Movers {
                 }
                 else if(_activated && !value){
                     transform.position = _startPosition;
-                    audio.Stop();
+                    audioSource.Stop();
                 }
 
                 _activated = value;
@@ -39,12 +40,12 @@ namespace Deplorable_Mountaineer.Movers {
             transform.position = newPosition;
             if(Vector3.Distance(newPosition, _endPosition) < speed*Time.fixedDeltaTime){
                 enabled = false;
-                audio.Stop();
+                audioSource.Stop();
             }
         }
 
         public void OnActivate(){
-            if(enabled) audio.Play();
+            if(enabled) audioSource.Play();
             _activated = true; //do not use property, which is instant-open
         }
     }

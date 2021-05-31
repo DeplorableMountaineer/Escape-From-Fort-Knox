@@ -33,8 +33,9 @@ namespace Deplorable_Mountaineer.UI {
         }
 
         public static void Message(AudioClip clip){
-            AudioSource.PlayClipAtPoint(clip,
-                FindObjectOfType<CharacterController>().transform.position, 1);
+            AudioSource a = FindObjectOfType<HudMessage>().GetComponent<AudioSource>();
+            a.clip = clip;
+            a.Play();
         }
     }
 }

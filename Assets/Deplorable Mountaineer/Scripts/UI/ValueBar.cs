@@ -10,9 +10,8 @@ namespace Deplorable_Mountaineer.UI {
         [SerializeField] private Color backgroundColor = new Color(0, 0, 0, .5f);
         [SerializeField] private Color fillColor = new Color(.4f, 0, .25f, .75f);
         [SerializeField] private Color amountColor = new Color(.5f, 1, 0, .75f);
-
         [SerializeField, Range(0, 1)] private float initialAmount;
-
+       
         private float _amount;
 
         [PublicAPI]

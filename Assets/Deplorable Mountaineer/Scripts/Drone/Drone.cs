@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Deplorable_Mountaineer.Code_Library;
 using Deplorable_Mountaineer.Code_Library.Mover;
+using Deplorable_Mountaineer.EditorUtils.Attributes;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -40,7 +40,7 @@ namespace Deplorable_Mountaineer.Drone {
         private Transform target;
 
         [Tooltip("Current state of the drone's AI")] [SerializeField]
-        private DroneState state = DroneState.Guarding;
+        public DroneState state = DroneState.Guarding;
 
         [Tooltip(
             " Camera allowing drone to be used as a security camera, displayed on monitors " +
@@ -60,15 +60,14 @@ namespace Deplorable_Mountaineer.Drone {
 
         [Tooltip(
             "Home location, where drone returns when no longer chasing, in the guarding state")]
-        [SerializeField, EditorUtils.Attributes.ReadOnly]
+        [SerializeField, ReadOnly]
         private Vector3 home;
 
         [Tooltip("Direction facing when home, in the guarding state")]
-        [SerializeField, EditorUtils.Attributes.ReadOnly]
+        [SerializeField, ReadOnly]
         private Vector3 homeFacing;
 
-        [SerializeField, EditorUtils.Attributes.ReadOnly]
-        public StateData stateData = new StateData();
+        [SerializeField] public StateData stateData = new StateData();
 
         /// <summary>
         /// Waypoints allowing drone to do 3D navigation and pathfinding
@@ -102,6 +101,8 @@ namespace Deplorable_Mountaineer.Drone {
         /// Health component of the target, to determine if it is dead
         /// </summary>
         private Health _targetHealth;
+
+        private Health _health;
 
         /// <summary>
         /// The drone's rigidbody, through which it is moved
@@ -175,6 +176,8 @@ namespace Deplorable_Mountaineer.Drone {
             //reference the rigid body component
             _rigidbody = GetComponent<Rigidbody>();
 
+            _health = GetComponent<Health>();
+
             //reference the target's health component
             if(target) _targetHealth = target.GetComponent<Health>();
 
@@ -222,6 +225,7 @@ namespace Deplorable_Mountaineer.Drone {
         }
 
         private void FixedUpdate(){
+            if(_health.Amount < Mathf.Epsilon) return;
             //turn toward target if requested
             if(_shouldFaceTarget) FaceTarget(Time.deltaTime);
 

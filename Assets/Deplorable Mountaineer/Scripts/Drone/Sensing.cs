@@ -7,12 +7,14 @@ namespace Deplorable_Mountaineer.Drone {
         [SerializeField] private float sightConeHalfAngle = 30;
         [SerializeField] private float sightConeDistance = 20;
         [SerializeField] private float hearingDistance = 5;
+        [SerializeField] private float painDuration = 5;
 
         private Transform _transform;
         private int _seenFrameChecked = -1;
         private int _heardFrameChecked = -1;
         private bool _seen = false;
         private bool _heard = false;
+        private float _painTime = -1000;
 
         private void OnValidate(){
             if(target || string.IsNullOrWhiteSpace(targetTag)) return;
@@ -25,11 +27,19 @@ namespace Deplorable_Mountaineer.Drone {
         }
 
         public bool CanSenseTarget(){
-            return CanSeeTarget() || CanHearTarget();
+            return CanSeeTarget() || CanHearTarget() || PainFelt();
         }
 
         public bool CanLocateTarget(){
             return CanSeeTarget();
+        }
+
+        public bool PainFelt(){
+            return Time.time - _painTime < painDuration;
+        }
+
+        public void GivePain(){
+            _painTime = Time.time;
         }
 
         private bool CanHearTarget(){
