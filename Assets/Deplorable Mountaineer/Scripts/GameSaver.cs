@@ -3,23 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Deplorable_Mountaineer.Code_Library.Mover;
+using Deplorable_Mountaineer.EditorUtils.Attributes;
 using Deplorable_Mountaineer.Movers;
 using Deplorable_Mountaineer.Singleton;
 using Deplorable_Mountaineer.Switches;
 using Deplorable_Mountaineer.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 namespace Deplorable_Mountaineer {
     public class GameSaver : PersistentSingleton<GameSaver> {
         [SerializeField] private string filename = "SavedGame";
-        [SerializeField] private KeyCode loadKey = KeyCode.F2;
-        [SerializeField] private KeyCode saveKey = KeyCode.F6;
+        [SerializeField] private KeyCode loadKey = KeyCode.F3;
+        [SerializeField] private KeyCode saveKey = KeyCode.F2;
         [SerializeField] private string volumeBarTag = "Volume Bar";
 
-        public ValueBar volumeBar;
-        public bool restarting = false;
+        [ReadOnly] public ValueBar volumeBar;
+        [ReadOnly] public bool restarting = false;
 
         private void Start(){
             volumeBar = GameObject.FindGameObjectWithTag(volumeBarTag)
@@ -67,8 +67,9 @@ namespace Deplorable_Mountaineer {
 
         private IEnumerator ShowVolumeBar(){
             volumeBar.gameObject.SetActive(true);
-            volumeBar.Amount = AudioListener.volume;
-            PlayerPrefs.SetFloat("Volume", AudioListener.volume);
+            float volume = AudioListener.volume;
+            volumeBar.Amount = volume;
+            PlayerPrefs.SetFloat("Volume", volume);
             yield return new WaitForSeconds(5);
             volumeBar.gameObject.SetActive(false);
         }
@@ -156,7 +157,7 @@ namespace Deplorable_Mountaineer {
 
         private void SetInitialSwitchState(GameState state){
             FindObjectOfType<Trigger>().numActivations = 1;
-            GameObject.FindObjectOfType<SwitchedMover>().Activated =
+            FindObjectOfType<SwitchedMover>().Activated =
                 state.initialSwitchActivated;
         }
 
@@ -221,7 +222,7 @@ namespace Deplorable_Mountaineer {
 
         private void GetInitialSwitchState(GameState state){
             state.initialSwitchActivated =
-                GameObject.FindObjectOfType<SwitchedMover>().Activated;
+                FindObjectOfType<SwitchedMover>().Activated;
         }
 
         private void GetPhysicsBodyStates(GameState state){
