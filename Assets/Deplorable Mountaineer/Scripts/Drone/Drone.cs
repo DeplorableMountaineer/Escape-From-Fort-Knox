@@ -258,7 +258,7 @@ namespace Deplorable_Mountaineer.Drone {
         /// <exception cref="ArgumentOutOfRangeException">if state is invalid</exception>
         private IEnumerator StartUpdatingCoroutine(DroneState droneState, float delay){
             yield return new WaitForSeconds(delay);
-            Debug.Log($"{this} updating {droneState}, deltaTime = {_updateRate}");
+            //Debug.Log($"{this} updating {droneState}, deltaTime = {_updateRate}");
 
             //Select correct state, start a coroutine to update it, and store the
             //coroutine so it can be stopped on state exit
@@ -315,7 +315,7 @@ namespace Deplorable_Mountaineer.Drone {
         /// </summary>
         /// <param name="droneState">The AI state to stop</param>
         private void StopUpdating(DroneState droneState){
-            Debug.Log($"{this} no longer updating {droneState}");
+            //Debug.Log($"{this} no longer updating {droneState}");
             if(_stateUpdateCoroutines.ContainsKey(droneState))
                 if(_stateUpdateCoroutines[droneState] != null)
                     StopCoroutine(_stateUpdateCoroutines[droneState]);
@@ -354,7 +354,7 @@ namespace Deplorable_Mountaineer.Drone {
         /// <param name="s">The state to enter</param>
         /// <exception cref="ArgumentOutOfRangeException">if the state is invalid</exception>
         private void EnterState(DroneState s){
-            Debug.Log($"{this} entering {s}");
+            //Debug.Log($"{this} entering {s}");
 
             switch(s){
                 case DroneState.Guarding:
@@ -406,7 +406,7 @@ namespace Deplorable_Mountaineer.Drone {
         /// <param name="next">The next state</param>
         /// <exception cref="ArgumentOutOfRangeException">if the state is invalid</exception>
         private void ExitState(DroneState s, DroneState next){
-            Debug.Log($"{this} exiting {s} to transition to {next}");
+            //Debug.Log($"{this} exiting {s} to transition to {next}");
             switch(s){
                 case DroneState.Guarding:
                     ExitGuardingState(next);
@@ -818,7 +818,7 @@ namespace Deplorable_Mountaineer.Drone {
                 //find a waypoint
                 _currentWaypoint = FindWaypointNear(transform.position);
                 if(_currentWaypoint){
-                    Debug.Log($"First waypoint: {_currentWaypoint}");
+                    //Debug.Log($"First waypoint: {_currentWaypoint}");
                     //if found, start following waypoint path
                     TransitionState(DroneState.FollowingWaypointsHome);
                     break;
@@ -903,7 +903,7 @@ namespace Deplorable_Mountaineer.Drone {
 
                     //get next waypoint on path to home
                     _currentWaypoint = FindNextWaypointOnPath(transform.position, home);
-                    Debug.Log($"Next waypoint: {_currentWaypoint}");
+                    //Debug.Log($"Next waypoint: {_currentWaypoint}");
 
                     //if none found, seek path home
                     if(!_currentWaypoint){

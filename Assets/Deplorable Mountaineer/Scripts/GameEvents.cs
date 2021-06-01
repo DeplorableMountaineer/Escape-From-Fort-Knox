@@ -99,7 +99,7 @@ namespace Deplorable_Mountaineer {
             MessageEvent me = _eventQueue.Dequeue();
             if(me.Condition != null && !me.Condition.Invoke()) return;
             if(me.AudioMessageClip) Message(me.AudioMessageClip);
-            if(!me.AudioMessageClip || AudioListener.volume <= .1f) Message(me.TextMessage);
+            if(!me.AudioMessageClip || AudioListener.volume <= .21f) Message(me.TextMessage);
             if(string.IsNullOrWhiteSpace(me.CancelTriggerId)){
                 return;
             }

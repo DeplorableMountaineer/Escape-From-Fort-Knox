@@ -39,7 +39,7 @@ namespace Deplorable_Mountaineer {
 
             if(CompareTag("Player")) return;
             Sensing s = GetComponentInChildren<Sensing>();
-            if(s){
+            if(s && health < old){
                 s.GivePain();
             }
         }

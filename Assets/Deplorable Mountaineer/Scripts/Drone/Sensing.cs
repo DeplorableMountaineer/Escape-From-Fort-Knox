@@ -50,7 +50,14 @@ namespace Deplorable_Mountaineer.Drone {
             Vector3 targetPos = target.position;
             Vector3 offset = targetPos - position;
             float distance = offset.magnitude;
-            return distance <= hearingDistance;
+            if(distance > hearingDistance) return _heard = false;
+            if(distance < hearingDistance/3) return _heard = true;
+            Vector3 direction = offset/distance;
+            bool blocked = Physics.Raycast(position, direction, out RaycastHit hit,
+                distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            if(!blocked) return _heard = true;
+            Transform root = hit.collider.transform.root;
+            return _heard = (root == transform || root == target.root);
         }
 
         private bool CanSeeTarget(){

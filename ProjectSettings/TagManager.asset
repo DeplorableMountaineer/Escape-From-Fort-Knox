@@ -8,6 +8,7 @@ TagManager:
   - Background
   - Fire
   - Waypoint
+  - Volume Bar
   layers:
   - Default
   - TransparentFX

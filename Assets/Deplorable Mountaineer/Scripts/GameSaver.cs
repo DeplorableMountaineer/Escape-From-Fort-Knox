@@ -9,19 +9,36 @@ using Deplorable_Mountaineer.Switches;
 using Deplorable_Mountaineer.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace Deplorable_Mountaineer {
     public class GameSaver : PersistentSingleton<GameSaver> {
         [SerializeField] private string filename = "SavedGame";
         [SerializeField] private KeyCode loadKey = KeyCode.F2;
         [SerializeField] private KeyCode saveKey = KeyCode.F6;
-        [SerializeField] private ValueBar volumeBar;
+        [SerializeField] private string volumeBarTag = "Volume Bar";
+
+        public ValueBar volumeBar;
+        public bool restarting = false;
 
         private void Start(){
+            volumeBar = GameObject.FindGameObjectWithTag(volumeBarTag)
+                .GetComponent<ValueBar>();
             volumeBar.gameObject.SetActive(false);
+            if(PlayerPrefs.HasKey("Volume"))
+                AudioListener.volume = PlayerPrefs.GetFloat("Volume");
         }
 
         private void Update(){
+            if(restarting){
+                restarting = false;
+                GameObject go = GameObject.FindGameObjectWithTag(volumeBarTag);
+                if(go){
+                    volumeBar = go.GetComponent<ValueBar>();
+                    volumeBar.gameObject.SetActive(false);
+                }
+            }
+
             if(Input.GetKeyDown(loadKey)) RestoreGame();
             else if(Input.GetKeyDown(saveKey)){
                 GameObject go = GameObject.FindGameObjectWithTag("Player");
@@ -51,6 +68,7 @@ namespace Deplorable_Mountaineer {
         private IEnumerator ShowVolumeBar(){
             volumeBar.gameObject.SetActive(true);
             volumeBar.Amount = AudioListener.volume;
+            PlayerPrefs.SetFloat("Volume", AudioListener.volume);
             yield return new WaitForSeconds(5);
             volumeBar.gameObject.SetActive(false);
         }

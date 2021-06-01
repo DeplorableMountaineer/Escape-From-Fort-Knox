@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityStandardAssets.Characters.FirstPerson;
-using UnityStandardAssets.CrossPlatformInput;
 using UnityStandardAssets.Utility;
 
 #pragma warning disable 618, 649
@@ -75,7 +74,7 @@ namespace Deplorable_Mountaineer {
             RotateView();
             // the jump state needs to read here to make sure it is not missed
             if(!_jump){
-                _jump = CrossPlatformInputManager.GetButtonDown("Jump") && !_jumping;
+                _jump = Input.GetButtonDown("Jump") && !_jumping;
                 //don't allow jump when already jumping; without the && !_jumping,
                 //releasing and re-pressing jump while character is falling
                 //will cause a jump on landing
@@ -214,8 +213,8 @@ namespace Deplorable_Mountaineer {
 
         private void GetInput(out float speed){
             // Read input
-            float horizontal = CrossPlatformInputManager.GetAxis("Horizontal");
-            float vertical = CrossPlatformInputManager.GetAxis("Vertical");
+            float horizontal = Input.GetAxis("Horizontal");
+            float vertical = Input.GetAxis("Vertical");
 
             bool waswalking = isWalking;
 
