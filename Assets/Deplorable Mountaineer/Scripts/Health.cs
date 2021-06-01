@@ -22,6 +22,10 @@ namespace Deplorable_Mountaineer {
             }
         }
 
+        public void SetHealthSilently(float amount){
+            _health = amount;
+        }
+
         private void Awake(){
             _rigidbody = GetComponentInChildren<Rigidbody>();
         }

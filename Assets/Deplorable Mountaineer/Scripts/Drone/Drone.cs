@@ -1269,9 +1269,11 @@ namespace Deplorable_Mountaineer.Drone {
             stateData.position = _rigidbody.position;
             stateData.eulerAngles = _rigidbody.rotation.eulerAngles;
             stateData.state = state;
+            stateData.health = _health.Amount;
         }
 
         public void SetState(){
+            _health.SetHealthSilently(stateData.health);
             _rigidbody.velocity = stateData.velocity;
             _rigidbody.position = stateData.position;
             transform.eulerAngles = stateData.eulerAngles;
@@ -1320,6 +1322,7 @@ namespace Deplorable_Mountaineer.Drone {
             public Vector3 position;
             public Vector3 eulerAngles;
             public DroneState state;
+            public float health;
             public string id;
         }
     }

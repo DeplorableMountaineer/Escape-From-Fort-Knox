@@ -20,6 +20,7 @@
 
 //Modifications by TDV
 
+using System.Collections;
 using System.IO;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -68,8 +69,11 @@ namespace Deplorable_Mountaineer {
                 _imageCount = PlayerPrefs.GetInt(ImageCntKey);
             }
 
+            string prefix = Application.persistentDataPath;
+
             // if there is not a "Screenshots" directory in the Project folder, create one
-            if(!Directory.Exists("Screenshots")) Directory.CreateDirectory("Screenshots");
+            if(!Directory.Exists($"{prefix}/Screenshots"))
+                Directory.CreateDirectory($"{prefix}/Screenshots");
         }
 
         /// <summary>
@@ -85,15 +89,31 @@ namespace Deplorable_Mountaineer {
                 int width = Screen.width*scaleFactor;
                 int height = Screen.height*scaleFactor;
 
+                string prefix = Application.persistentDataPath;
+
                 // Takes the screenshot with filename "Screenshot_WidthXHeight_ImageCount.png"
                 // and save it in the Screenshots folder
-                ScreenCapture.CaptureScreenshot("Screenshots/Screenshot_" +
+                ScreenCapture.CaptureScreenshot($"{prefix}/Screenshots/Screenshot_" +
                                                 +width + "x" + height
                                                 + "_"
                                                 + _imageCount
                                                 + ".png",
                     scaleFactor);
+                StartCoroutine(ScreenshotMessage(width, height));
             }
+        }
+
+        private IEnumerator ScreenshotMessage(int width, int height){
+            yield return null;
+            yield return null;
+            string prefix = Application.persistentDataPath;
+
+            GameEvents.Instance.Message("Screenshot stored in " + Path.GetFullPath(
+                $"{prefix}/Screenshots/Screenshot_" +
+                +width + "x" + height
+                + "_"
+                + _imageCount
+                + ".png"));
         }
 
         #region Public Variables
